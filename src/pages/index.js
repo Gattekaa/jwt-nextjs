@@ -2,10 +2,14 @@ import Head from 'next/head'
 import Image from 'next/image'
 import { Inter } from 'next/font/google'
 import styles from '@/styles/Home.module.css'
+import { useContext } from 'react'
+import { AuthContext } from '@/contexts/AuthContext'
+import { parseCookies } from 'nookies'
 
 const inter = Inter({ subsets: ['latin'] })
 
 export default function Home() {
+  const {user} = useContext(AuthContext)
   return (
     <>
       <Head>
@@ -17,7 +21,7 @@ export default function Home() {
       <main className={styles.main}>
         <div className={styles.description}>
           <p>
-            Get started by editing&nbsp;
+            Get started
             <code className={styles.code}>src/pages/index.js</code>
           </p>
           <div>
@@ -120,4 +124,22 @@ export default function Home() {
       </main>
     </>
   )
+}
+
+export const getServerSideProps = async (ctx) => {
+  const { token } = parseCookies(ctx)
+
+  if(!token) {
+    return {
+      redirect: {
+        destination: '/signin',
+        permanent: false,
+        
+      }
+    }
+  }
+
+  return{
+    props: {}
+  }
 }
