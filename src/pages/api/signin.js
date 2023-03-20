@@ -24,7 +24,9 @@ export default async function handler(req, res,) {
 
     if (!comparedPassword) return res.status(400).json({ message: 'Usuário ou senha inválidos.' })
 
-    const userData = await db.select('username', 'email').from('jwstoken').where({ username: username })
+    const userData = await db.select('username', 'email', 'role').from('jwstoken').where({ username: username })
+
+    const TIME_TO_EXPIRE = 1
 
     try{
 
@@ -32,7 +34,7 @@ export default async function handler(req, res,) {
             user: {
                 ...userData
             }
-        }, process.env.SECRET)
+        }, process.env.SECRET, {expiresIn: 60})
 
         res.status(200).send({
             token: token,

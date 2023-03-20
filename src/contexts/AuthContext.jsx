@@ -1,4 +1,4 @@
-import { setCookie, parseCookies } from "nookies";
+import { setCookie, parseCookies, destroyCookie } from "nookies";
 import { createContext, useEffect, useState } from "react";
 import Router from "next/router";
 import connection from "@/config/connection";
@@ -14,7 +14,19 @@ export function AuthProvider({ children }) {
         const { token } = parseCookies()
 
         if(token) {
-            
+            console.log(token)
+            const data = connection.get('/isexpired').then(() => {
+                return
+            }).catch(() => {
+                destroyCookie(undefined, 'token')
+                return {
+                    redirect: {
+                      destination: '/signin',
+                      permanent: false,
+                      
+                    }
+                  }
+            })
         }
     }, [])
 
